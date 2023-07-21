@@ -31,12 +31,13 @@ stateDiagram
       Service --> Database
       Database --> Service
     }
-    state join_state <<join>>
-    Indexer --> join_state
-    join_state --> PythonSDK
-    join_state --> JavaScriptSDK
-    join_state --> GoSDK
-    join_state --> JavaSDK
+    Indexer --> SDK
+    state SDK {
+      Python
+      JavaScript
+      Go
+      Java
+    }
 ```
 
 ## Quick Start
