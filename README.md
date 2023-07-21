@@ -19,7 +19,7 @@
     <img src="https://raw.githubusercontent.com/block-foundation/docker-algorand-node/master/res/block_foundation-containers.jpg"width="100%" height="100%" alt="Form Follows Finance">
 </p>
 
-The primary purpose of this Indexer is to provide a REST API interface of API calls to support searching the Algorand Blockchain. The Indexer REST APIs retrieve the blockchain data from a PostgreSQL compatible database that must be populated. This database is populated using the same indexer instance or a separate instance of the indexer which must connect to the algod process of a running Algorand node to read block data. This node must also be an Archival node to make searching the entire blockchain possible.
+## Network
 
 ``` mermaid
 stateDiagram
@@ -69,7 +69,7 @@ docker run -d -p 8080:8080 --name algorand bjweaver/algorand-node:testnet
 docker exec algorand /algorand/node/goal node status -d /algorand/node/data
 ```
 
-## API Connection
+### API Connection
 
 API will listen on `localhost:8080`
 
@@ -77,6 +77,8 @@ API will listen on `localhost:8080`
 curl 127.0.0.1:8080/swagger.json
 ```
 
-## Disclaimer
+## Legal
+
+### Disclaimer
 
 **THIS SOFTWARE IS PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.**
