@@ -19,6 +19,25 @@
     <img src="https://raw.githubusercontent.com/block-foundation/docker-algorand-node/master/res/block_foundation-containers.jpg"width="100%" height="100%" alt="Form Follows Finance">
 </p>
 
+The primary purpose of this Indexer is to provide a REST API interface of API calls to support searching the Algorand Blockchain. The Indexer REST APIs retrieve the blockchain data from a PostgreSQL compatible database that must be populated. This database is populated using the same indexer instance or a separate instance of the indexer which must connect to the algod process of a running Algorand node to read block data. This node must also be an Archival node to make searching the entire blockchain possible.
+
+``` mermaid
+stateDiagram
+    direction LR
+    Blockchain --> Node
+    Node --> Indexer
+    state Indexer {
+      direction LR
+      Service --> Database
+    }
+    Indexer --> Python SDK
+    Indexer --> JavaScript SDK
+    Indexer --> Go SDK
+    Indexer --> Java SDK
+```
+
+## Quick Start
+
 Run Algorand in a Docker container
 
 ### Build
