@@ -25,12 +25,13 @@ The primary purpose of this Indexer is to provide a REST API interface of API ca
 stateDiagram
     direction LR
     Blockchain --> Node
+    Node --> Blockchain
     Node --> Indexer
     state Indexer {
-      direction LR
       Service --> Database
       Database --> Service
     }
+    state join_state <<join>>
     Indexer --> join_state
     join_state --> PythonSDK
     join_state --> JavaScriptSDK
