@@ -77,6 +77,36 @@ API will listen on `localhost:8080`
 curl 127.0.0.1:8080/swagger.json
 ```
 
+## Resources
+
+### Algorand
+
+- [Algorand](https://www.algorand.com/)
+- [Algorand | Developer](https://developer.algorand.org/)
+
+#### Algorand SDK
+
+- [Algorand SDK | Docs](https://py-algorand-sdk.readthedocs.io/en/latest/)
+- [Algorand SDK | GitHub](https://github.com/algorand/py-algorand-sdk/)
+
+#### Algorand Go
+
+- [Algorand Go | GitHub](https://github.com/algorand/go-algorand)
+
+#### AlgoDjango
+- [AlgoDjango | Tutorial](https://developer.algorand.org/solutions/getting-started-with-python-algorand-sdk-and-django/)
+- [AlgoDjango | GitHub](https://github.com/ipaleka/algodjango)
+
+#### Algorand PyTeal
+
+- [Algorand PyTeal](https://github.com/algorand/pyteal)
+- [Algorand PyTeal | Utils](https://github.com/algorand/pyteal-utils)
+- [Algorand PyTeal | Course](https://github.com/algorand-devrel/pyteal-course)
+
+#### Algorand Sandbox
+
+- [Algorand Sandbox](https://github.com/algorand/sandbox)
+
 ## Legal
 
 ### Disclaimer
