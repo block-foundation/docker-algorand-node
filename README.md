@@ -29,11 +29,13 @@ stateDiagram
     state Indexer {
       direction LR
       Service --> Database
+      Database --> Service
     }
-    Indexer --> Python SDK
-    Indexer --> JavaScript SDK
-    Indexer --> Go SDK
-    Indexer --> Java SDK
+    Indexer --> join_state
+    join_state --> PythonSDK
+    join_state --> JavaScriptSDK
+    join_state --> GoSDK
+    join_state --> JavaSDK
 ```
 
 ## Quick Start
