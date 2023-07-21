@@ -33,6 +33,7 @@ stateDiagram
     }
     Indexer --> SDK
     state SDK {
+      direction TD
       Python
       JavaScript
       Go
