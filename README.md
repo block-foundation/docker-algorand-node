@@ -23,7 +23,7 @@ The primary purpose of this Indexer is to provide a REST API interface of API ca
 
 ``` mermaid
 stateDiagram
-    direction LR
+    direction TD
     Blockchain --> Node
     Node --> Blockchain
     Node --> Indexer
@@ -33,7 +33,6 @@ stateDiagram
     }
     Indexer --> SDK
     state SDK {
-      direction TD
       Python
       JavaScript
       Go
