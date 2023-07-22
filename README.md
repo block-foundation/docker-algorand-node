@@ -107,6 +107,21 @@ curl 127.0.0.1:8080/swagger.json
 
 - [Algorand Sandbox](https://github.com/algorand/sandbox)
 
+## Development
+
+### Authors
+
+This is an open-source project by the **[Block Foundation](https://www.blockfoundation.io "Block Foundation website")**.
+
+The Block Foundation mission is enabling architects to take back initiative and contribute in solving the mismatch in housing through blockchain technology. Therefore the Block Foundation seeks to unschackle the traditional constraints and construct middle ground between rent and the rigidity of traditional mortgages.
+
+website: [www.blockfoundation.io](https://www.blockfoundation.io "Block Foundation website")
+
+### Contributing
+
+We'd love for you to contribute and to make **`block.txt`** even better than it is today!
+Please refer to the [contribution guidelines](.github/CONTRIBUTING.md) for information.
+
 ## Legal
 
 ### Copyright
