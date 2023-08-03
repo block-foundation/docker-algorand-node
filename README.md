@@ -25,8 +25,6 @@ Welcome to the Block Foundation's Algorand Node Docker Image Repository, the hub
 
 As part of our mission to revolutionize architecture and real-estate through blockchain technology, we recognize the importance of creating accessible and reliable resources for our community. In this repository, you'll find a Docker image designed specifically for running an Algorand Node, an integral part of the Algorand blockchain network.
 
-For those new to the terminology, Docker is a platform that allows developers to automate the deployment, scaling, and management of applications. An Algorand Node, on the other hand, is a software application that interacts with the Algorand network to verify transactions and blocks. Combining the two provides a reliable, scalable, and easy-to-use way to participate in the Algorand network.
-
 Our Docker image is built with a focus on ease-of-use, reliability, and security. It provides a ready-to-use environment for running an Algorand Node, eliminating the need for manual setup and configuration. It is perfect for developers who wish to experiment with the Algorand network or for those looking to contribute to the network by running a node.
 
 This repository contains detailed instructions on how to use the Docker image, as well as the source code for the image itself. We encourage our community members to use this resource, provide feedback, and contribute to its ongoing improvement.
