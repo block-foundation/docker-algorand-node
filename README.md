@@ -53,8 +53,6 @@ This repository contains detailed instructions on how to use the Docker image, a
 
 As with all our initiatives, this project is underpinned by our commitment to transparency, collaboration, and the democratization of technology. We're excited to share this work with you and look forward to seeing how it aids in your blockchain journey.
 
-Thank you for joining us on this quest to reshape the future of architecture and real-estate through blockchain technology. Together, let's build a more sustainable, equitable, and innovative future.
-
 ## Network
 
 ``` mermaid
