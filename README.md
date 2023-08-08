@@ -77,40 +77,10 @@ stateDiagram
 
 ## Quick Start
 
-Run Algorand in a Docker container
-
-### Build
+> Run Algorand in a Docker container:
 
 ``` sh
-docker build -t algorand .
-```
-
-### Running
-
-``` sh
-docker run -d -p 8080:8080 --name algorand bjweaver/algorand-node
-```
-
-> To run on testnet:
-
-``` sh
-docker run -d -p 8080:8080 --name algorand bjweaver/algorand-node:testnet
-```
-
-### Status
-
-> To obtain node status:
-
-``` sh
-docker exec algorand /algorand/node/goal node status -d /algorand/node/data
-```
-
-### API Connection
-
-API will listen on `localhost:8080`
-
-``` sh
-curl 127.0.0.1:8080/swagger.json
+docker pull blockfoundation/algorand-node
 ```
 
 ## Resources
