@@ -4,39 +4,72 @@
 # Base Image
 # =============================================================================
 
-ARG GO_VERSION=1.17.5
+ARG GO_VERSION=1.20.5
+FROM golang:$GO_VERSION
 
-FROM golang:$GO_VERSION-bullseye as build
-# FROM ubuntu:22.04
 
 # Labels
 # =============================================================================
 
+LABEL \
+    maintainer="Block Foundation <info@blockfoundation.io>" \
+    org.opencontainers.image.title="Algorand Node" \
+    org.opencontainers.image.version="1.0" \
+    org.opencontainers.image.authors="Block Foundation" \
+    org.opencontainers.image.vendor="Block Foundation" \
+    org.opencontainers.image.url="https://www.blockfoundation.io" \
+    org.opencontainers.image.source="https://github.com/block-foundation/docker-algorand-node/" \
+    org.opencontainers.image.documentation="https://github.com/block-foundation/docker-algorand-node/" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.description="Algorand Node" \
+    org.opencontainers.image.ref.name="docker-algorand-node"
 
-# Layer | Dependencies
+
+# Arguments
 # =============================================================================
 
+ARG CHANNEL=nightly
+ARG URL=
+ARG BRANCH=
+ARG SHA=
+
+# When these are set attempt to connect to a network.
+ARG GENESIS_FILE=""
+ARG BOOTSTRAP_URL=""
+
+# Options for algod config
+ARG ALGOD_PORT=""
+ARG ALGOD_FOLLOWER_PORT=""
+ARG KMD_PORT=""
+ARG TOKEN=""
+ARG TEMPLATE=""
+ARG NETWORK_NUM_ROUNDS="30000"
+ARG NODE_ARCHIVAL=""
+
+RUN echo "Installing from source. ${URL} -- ${BRANCH}"
+ENV BIN_DIR="$HOME/node"
+ENV ALGORAND_DATA="/opt/data"
+
+
+# Basic Dependencies
+# =============================================================================
+
+ENV HOME /opt
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN \
-    echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-docker && \
-    RUN echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-docker && \
-    DEBIAN_FRONTEND=noninteractive && \
-    echo 'Install System Dependencies' && \
-    apt-get -q update && \
-    apt-get -y upgrade && \
-    apt-get install -yq --no-install-recommends \
-        build-essential \
-        # wget \
-        # git \
-        # curl \
-        # g++ \
-        # cmake \
-        && \
-    echo 'Install Python Dependencies' && \
-        python3-dev \
-        python3-pip \
-        python3-venv \
-        && \
-    echo 'Install Algorand Dependencies' && \
+    apt-get update && \
+    apt-get install -y \
+        apt-utils \
+        curl \
+        git \
+        git-core \
+        bsdmainutils \
+        python3 \
+        # Additional
+        # dependencies = patch + those listed here: https://github.com/algorand/go-algorand/blob/rel/stable/scripts/install_linux_deps.sh#L17
+        # Note that those get installed through configure_dev.sh anyway, but if we're rebuilding locally - for example to test out
+        # different branches -  it's faster to have them installed here and be cached
         patch \
         libtool \
         libboost-math-dev \
@@ -44,58 +77,27 @@ RUN \
         jq \
         autoconf \
         shellcheck \
-        sqlite3
+        sqlite3 \
+        python3-venv
 
-# Layer | Clean System
+
+
+# Copy
 # =============================================================================
 
-RUN echo 'Clean apt-get' \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* \
-    && rm -rf /var/tmp/*
-    
+# Copy lots of things into the container. The gitignore indicates which directories.
+COPY . /tmp
 
 
-
-
-# =============================================================================
-# RUNNER
+# Install Algod binaries
 # =============================================================================
 
-FROM builder as runner
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Basic dependencies.
-ENV DEBIAN_FRONTEND noninteractive
-
-
-# dependencies = patch + those listed here: https://github.com/algorand/go-algorand/blob/rel/stable/scripts/install_linux_deps.sh#L17
-# Note that those get installed through configure_dev.sh anyway, but if we're rebuilding locally - for example to test out
-# different branches -  it's faster to have them installed here and be cached
-RUN apt-get update && apt-get install -y patch libtool libboost-math-dev expect jq autoconf shellcheck sqlite3 python3-venv
+# RUN /tmp/images/algod/install.sh \
+#     -d "${BIN_DIR}" \
+#     -c "${CHANNEL}" \
+#     -u "${URL}" \
+#     -b "${BRANCH}" \
+#     -s "${SHA}"
 
 # Install algod binaries.
 ARG URL="https://github.com/algorand/go-algorand"
@@ -113,85 +115,36 @@ ENV PATH="$BIN_DIR:${PATH}"
 
 RUN ./scripts/dev_install.sh -p ${BIN_DIR}
 
-# Configure network
-ARG ALGOD_PORT="4001"
-ARG KMD_PORT="4002"
-ARG TOKEN="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-ARG TEMPLATE="DevModeNetwork.json"
 
-COPY ["$TEMPLATE", "${BASE_DIR}/"]
+# Configure Network
+# =============================================================================
 
-ENV NETWORK_DIR="$BASE_DIR/testnetwork"
-ENV NODE_DIR="${NETWORK_DIR}/Node"
-ENV KMD_DATA="${NODE_DIR}/kmd-v0.5"
-RUN goal network create -n sandnet -r "${NETWORK_DIR}" -t "${BASE_DIR}/${TEMPLATE}"
-RUN echo $TOKEN > "${NODE_DIR}/algod.token"
-RUN echo $TOKEN > "${KMD_DATA}/kmd.token"
-RUN echo "{ \"Version\": 12, \"GossipFanout\": 1, \"EndpointAddress\": \"0.0.0.0:${ALGOD_PORT}\", \"DNSBootstrapID\": \"\", \"IncomingConnectionsLimit\": 0, \"Archival\":false, \"isIndexerActive\":false, \"EnableDeveloperAPI\":true}" > "${NODE_DIR}/config.json"
-RUN echo "{ \"address\":\"0.0.0.0:${KMD_PORT}\",  \"allowed_origins\":[\"*\"]}" > "${KMD_DATA}/kmd_config.json"
+RUN sed -i \
+  -e "s/NETWORK_NUM_ROUNDS/$NETWORK_NUM_ROUNDS/" \
+  -e "s/ALGOD_FOLLOWER_PORT/$ALGOD_FOLLOWER_PORT/" \
+  "//tmp/${TEMPLATE}" && \
+ /tmp/images/algod/setup.py \
+ --bin-dir "$BIN_DIR" \
+ --data-dir "/opt/data" \
+ --start-script "/opt/start_algod.sh" \
+ --network-dir "/opt/testnetwork" \
+ --network-template "//tmp/${TEMPLATE}" \
+ --network-token "${TOKEN}" \
+ --algod-port "${ALGOD_PORT}" \
+ --kmd-port "${KMD_PORT}" \
+ --bootstrap-url "${BOOTSTRAP_URL}" \
+ --genesis-file "/tmp/${GENESIS_FILE}" \
+ --archival "${NODE_ARCHIVAL}"
 
-COPY ["start.sh", "${BIN_DIR}/"]
-RUN chmod +x "${BIN_DIR}/start.sh"
 
+# User Environment
+# =============================================================================
 
-FROM debian:bullseye-slim
+ENV PATH="$BIN_DIR:${PATH}"
+WORKDIR /opt/data
 
-ENV PATH="/opt/algorand/bin:${PATH}" \
-    ALGORAND_DATA="/opt/algorand/testnetwork/Node" \
-    KMD_DATA="/opt/algorand/testnetwork/Node/kmd-v0.5"
-
-COPY --from=build /opt/algorand /opt/algorand
-
-# 9392 = default port for tealdbg
-EXPOSE $ALGOD_PORT $KMD_PORT 9392
 
 # Start algod
-CMD ["start.sh"]
+# =============================================================================
 
-
-
-
-
-
-
-
-
-
-
-# sudo apt-get update
-# sudo apt-get install -y gnupg2 curl software-properties-common
-# curl -o - https://releases.algorand.com/key.pub | sudo tee /etc/apt/trusted.gpg.d/algorand.asc
-# sudo add-apt-repository "deb [arch=amd64] https://releases.algorand.com/deb/ stable main"
-# sudo apt-get update
-
-# # To get both algorand and the devtools:
-# sudo apt-get install -y algorand-devtools
-
-# # Or, to only install algorand:
-# sudo apt-get install -y algorand
-
-# algod -v
-
-
-
-# EXPOSE 8080
-
-# RUN mkdir /algorand
-
-# WORKDIR /algorand
-
-# RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl build-essential ca-certificates git mercurial runit
-
-# RUN curl -L https://github.com/algorand/go-algorand-doc/raw/master/downloads/installers/linux_amd64/install_master_linux-amd64.tar.gz --output /algorand/install_master_linux-amd64.tar.gz
-
-# RUN tar -xf install_master_linux-amd64.tar.gz
-
-# RUN mkdir node
-
-# RUN ./update.sh -i -c stable -p node -d node/data -n
-
-# RUN cp node/genesisfiles/mainnet/genesis.json node/data
-
-# ENTRYPOINT ["sh", "-c", "./update.sh -u -c stable -p node -d node/data -n && /algorand/node/algod -l 0.0.0.0:8080 -d /algorand/node/data"]
-
-
+CMD ["/opt/start_algod.sh"]
